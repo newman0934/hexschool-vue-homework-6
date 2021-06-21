@@ -7,5 +7,8 @@ export default {
   },
   getProduct ({ id }) {
     return axios.get(`${process.env.VUE_APP_URL}/product/${id}`)
+  },
+  getAdminProducts (page) {
+    return axios.get(`${process.env.VUE_APP_ADMIN_URL}/products?page=${page}`)
   }
 }
