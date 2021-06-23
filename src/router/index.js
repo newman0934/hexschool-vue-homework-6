@@ -3,6 +3,7 @@ import Index from '../views/Index.vue'
 import Cart from '../views/Cart.vue'
 import Product from '../views/Product.vue'
 import Login from '../views/login.vue'
+import Checkout from '../views/checkout'
 import Admin from '../views/admin/admin.vue'
 import AdminProducts from '../views/admin/products.vue'
 import AdminCoupon from '../views/admin/coupon.vue'
@@ -27,6 +28,11 @@ const routes = [
     path: '/cart',
     name: 'cart',
     component: Cart
+  },
+  {
+    path: '/checkout/:id',
+    name: 'checkout',
+    component: Checkout
   },
   {
     path: '/product/:id',

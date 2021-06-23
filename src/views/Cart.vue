@@ -72,6 +72,24 @@
           </tr>
         </tfoot>
       </table>
+      <div class="input-group mb-3 input-group-sm">
+        <input
+          type="text"
+          class="form-control"
+          v-model="coupon_code"
+          placeholder="請輸入優惠碼"
+        />
+        <div class="input-group-append">
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            @click="addCouponCode"
+          >
+            套用優惠碼
+          </button>
+        </div>
+      </div>
+
       <v-form ref="form" class="col-md-6 mx-auto mb-5" v-slot="{ errors }" @submit="addOder">
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
@@ -148,6 +166,7 @@
 import cartAPI from '../api/cart'
 import Header from '../components/header'
 import orderAPI from '../api/order'
+import couponAPI from '../api/coupon'
 import { Field, Form, ErrorMessage, defineRule, configure } from 'vee-validate'
 import { required, email, min, max, numeric } from '@vee-validate/rules'
 import { localize, loadLocaleFromURL } from '@vee-validate/i18n'
@@ -184,7 +203,8 @@ export default {
           address: ''
         },
         message: ''
-      }
+      },
+      coupon_code: ''
     }
   },
   methods: {
@@ -207,7 +227,7 @@ export default {
           throw new Error('送出訂單失敗')
         }
         this.$refs.form.resetForm()
-        this.fetchCarts()
+        this.$router.push(`/checkout/${data.orderId}`)
       } catch (error) {
         window.alert(error.message)
       }
@@ -248,6 +268,18 @@ export default {
         }
         this.fetchCarts()
         console.log(item)
+      } catch (error) {
+        window.alert(error.message)
+      }
+    },
+    async addCouponCode () {
+      try {
+        const { data } = await couponAPI.postCoupon({ code: this.coupon_code })
+        console.log(data)
+        if (!data.success) {
+          throw new Error('加入優惠券失敗')
+        }
+        this.fetchCarts()
       } catch (error) {
         window.alert(error.message)
       }

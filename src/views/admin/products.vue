@@ -1,5 +1,10 @@
 <template>
   <div class="container">
+        <div class="text-end mt-4">
+      <button class="btn btn-primary" type="button" @click="openProductModal(true)">
+        建立新的產品
+      </button>
+      </div>
     <table class="table mt-4">
       <thead>
         <tr>
@@ -26,7 +31,7 @@
               <button
                 class="btn btn-outline-primary btn-sm"
                 type="button"
-                @click="openModal(false, item)"
+                @click="openProductModal(false, item)"
               >編輯</button>
               <button
                 class="btn btn-outline-danger btn-sm"
@@ -40,18 +45,24 @@
     </table>
     <Pagination :pages="pagination" @emitPages="fetchProducts"></Pagination>
     <DelModal :item="tempProduct" @delItem="delProduct" ref="delModal"></DelModal>
+    <ProductModal :product="tempProduct" :isNew="isNew" ref="productModal" @update-product="updateProduct"></ProductModal>
   </div>
 </template>
 <script>
 import adminProductsAPI from '@/api/admin/products'
 import Pagination from '@/components/pagination'
 import DelModal from '@/components/delModal'
+import ProductModal from '@/components/productModal'
 export default {
   data () {
     return {
       products: [],
       pagination: {},
-      tempProduct: {}
+      tempProduct: {},
+      isNew: false,
+      status: {
+        fileUploading: false
+      }
     }
   },
   methods: {
@@ -77,9 +88,43 @@ export default {
         window.alert(error.message)
       }
     },
+    async updateProduct (item) {
+      try {
+        this.tempProduct = item
+        if (this.isNew) {
+          const { data } = await adminProductsAPI.postAdminProduct(this.tempProduct)
+          console.log(data)
+          if (!data.success) {
+            throw new Error('新增商品失敗')
+          }
+          this.$refs.productModal.hideModal()
+          this.fetchProducts()
+        } else {
+          const { data } = await adminProductsAPI.putAdminProduct(this.tempProduct.id, this.tempProduct)
+          console.log(data)
+          if (!data.success) {
+            throw new Error('修改商品失敗')
+          }
+          this.$refs.productModal.hideModal()
+          this.fetchProducts()
+        }
+      } catch (error) {
+        window.alert(error.message)
+      }
+    },
     openDelProductModal (item) {
       this.tempProduct = { ...item }
       this.$refs.delModal.openModal()
+    },
+    openProductModal (isNew, item) {
+      if (isNew) {
+        this.tempProduct = {}
+        this.isNew = true
+      } else {
+        this.tempProduct = { ...item }
+        this.isNew = false
+      }
+      this.$refs.productModal.openModal()
     }
   },
   created () {
@@ -87,7 +132,8 @@ export default {
   },
   components: {
     Pagination,
-    DelModal
+    DelModal,
+    ProductModal
   }
 }
 </script>
