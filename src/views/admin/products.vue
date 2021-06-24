@@ -69,6 +69,7 @@ export default {
     async fetchProducts (page = 1) {
       try {
         const { data } = await adminProductsAPI.getAdminProducts(page)
+        console.log(data)
         this.products = data.products
         this.pagination = data.pagination
       } catch (error) {

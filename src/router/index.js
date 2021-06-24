@@ -9,10 +9,18 @@ import AdminProducts from '../views/admin/products.vue'
 import AdminCoupon from '../views/admin/coupon.vue'
 import AdminOrder from '../views/admin/order.vue'
 
+const Token = localStorage.getItem('token')
 const hasLogin = (to, from, next) => {
-  const hasToken = localStorage.getItem('token')
-  if (hasToken) {
+  if (Token) {
     next('/')
+  } else {
+    next()
+  }
+}
+
+const notLogin = (to, from, next) => {
+  if (!Token) {
+    next('/login')
   } else {
     next()
   }
@@ -27,7 +35,8 @@ const routes = [
   {
     path: '/cart',
     name: 'cart',
-    component: Cart
+    component: Cart,
+    beforeEnter: notLogin
   },
   {
     path: '/checkout/:id',
@@ -62,7 +71,8 @@ const routes = [
         path: 'order',
         component: AdminOrder
       }
-    ]
+    ],
+    beforeEnter: notLogin
   }
 ]
 

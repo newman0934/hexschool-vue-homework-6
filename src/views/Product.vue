@@ -2,7 +2,7 @@
   <div>
     <Header></Header>
     <div class="container">
-      <div class="row">
+      <div class="row mb-3">
         <div class="col-6">
           <img :src="product.imageUrl" alt />
         </div>
@@ -15,6 +15,9 @@
           <input type="number" min="1" v-model.number="qty" />
           <button type="button" @click="addToCart(product.id, qty)">加入購物車</button>
         </div>
+      </div>
+      <div class="row">
+        <img v-for="(img, i) of product.imagesUrl" :src="img" :key="i" alt="" class="col-4 mb-3">
       </div>
     </div>
   </div>
@@ -40,7 +43,7 @@ export default {
         }
         this.product = data.product
       } catch (error) {
-        console.log(error.message)
+        window.alert(error.message)
       }
     },
     async addToCart (id, qty = 1) {
